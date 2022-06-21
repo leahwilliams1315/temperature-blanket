@@ -1,10 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
-import { getColorInfoByTemp } from "./TemperatureColorMap";
+import {
+  getColorInfoByTemp,
+  TemperatureColorList,
+} from "./TemperatureColorMap";
 import format from "date-fns/format";
 import { add } from "date-fns";
 import { FormControlLabel, Switch } from "@mui/material";
+
+import {
+  StyledColorInfo,
+  StyledColorLegend,
+  StyledColorSwatch,
+  StyledColorWrapper,
+  StyledContainer,
+  StyledHeader,
+  StyledRow,
+  StyledRowItemInfo,
+  StyledTemperatureItemWrapper,
+  TempRowContainer,
+} from "./App.styled";
 
 const APIKEY = `7e7aeba0478349569e7d61d8e1dd16ce`;
 
@@ -13,75 +29,9 @@ const TorontoCoords = {
   lon: -79.3832,
 };
 
-const StyledContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-family: "Raleway", sans-serif;
-`;
-
-const StyledTemperatureItemWrapper = styled.div`
-  display: flex;
-  max-width: 100vw;
-  flex-wrap: wrap;
-  row-gap: 10px;
-  column-gap: 10px;
-  justify-content: center;
-`;
-
-const StyledHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  height: 80px;
-  background-color: #85cdcb;
-  margin-bottom: 20px;
-`;
-
-const StyledRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  height: 100px;
-  border: 1px solid #412f38;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  padding: 16px;
-`;
-
-const StyledRowItemInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 40px;
-  width: 250px;
-  background-color: #ffffff;
-`;
-
-const StyledRowColor = styled.div`
-  display: flex;
-  width: 100px;
-  height: 100px;
-  border-radius: 6px;
-`;
-
-const TempRowContainer = styled.div`
-  display: flex;
-  justify-content: space-evenly;
-`;
-
-const StyledButton = styled.button<{ blueText?: boolean }>`
-  display: flex;
-  justify-content: center;
-  width: 100px;
-  height: 20px;
-  border: 1px solid black;
-  color: ${({ blueText }) => (blueText ? "#0000FF" : "#8B0000")};
-`;
-
 const RowHeader = styled.h2`
   margin: 0;
   padding-left: 15%;
-`;
-
-const StyledBlueButton = styled(StyledButton)`
-  color: #0000ff;
 `;
 
 const celsiusString = "°C";
@@ -119,11 +69,10 @@ const TemperatureRow: React.FC<{
           />
         </TempRowContainer>
       </StyledRowItemInfo>
-      <StyledRowColor
-        style={{
-          backgroundColor: getColorInfoByTemp(temperature)?.color || "white",
-        }}
-      ></StyledRowColor>
+      <StyledColorSwatch
+        background={getColorInfoByTemp(temperature)?.color || "white"}
+        borderRadius
+      />
     </StyledRow>
   );
 };
@@ -139,19 +88,31 @@ const App = () => {
         console.log(res.data);
       });
   };
+
   const [weatherData, setWeatherData] = useState<{ data: any[] } | null>(null);
+
+  useEffect(() => {
+    getWeatherData();
+  }, []);
 
   return (
     <StyledContainer>
-
-        <StyledButton blueText>
-            Hello World
-        </StyledButton>
-
-
       <StyledHeader>
-        <h2 style={{ marginLeft: 20 }}>Toronto Weather Data</h2>
-        <button onClick={getWeatherData}>Get Weather</button>
+        <h2>Toronto Weather Data - 2022</h2>
+        <StyledColorLegend>
+          {TemperatureColorList.map((colorRange) => (
+            <StyledColorWrapper>
+              <StyledColorSwatch
+                background={colorRange.color}
+                borderRadius={false}
+              />
+              <StyledColorInfo>
+                <p>Min:{colorRange.minTemp + celsiusString}</p>
+                <p>Max: {colorRange.maxTemp + celsiusString}</p>
+              </StyledColorInfo>
+            </StyledColorWrapper>
+          ))}
+        </StyledColorLegend>
       </StyledHeader>
       <StyledTemperatureItemWrapper>
         {weatherData?.data.map((day, i) => (
