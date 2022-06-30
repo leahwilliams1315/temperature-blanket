@@ -35,7 +35,7 @@ const TemperatureBlanket = () => {
   }>({});
 
   const dispatch = useDispatch();
-
+  // selectors to get data from state, used to populate the calendar and the legend
   const temperatureColourList = useSelector(
     (state: RootState) => state.temperatureColourList
   );
@@ -43,6 +43,7 @@ const TemperatureBlanket = () => {
   const weatherDates = useSelector(
     (state: RootState) => state.weatherData.temperatureDates
   );
+  console.log(weatherDates, "dates");
 
   const currentTemperatureRange = useSelector(
     (state: RootState) => state.weatherData.selectedTemperatureRange
@@ -78,7 +79,7 @@ const TemperatureBlanket = () => {
   const monthsWithMostDatesInTemperatureRange =
     monthsWithMostDatesInRange.reduce(
       (acc: { dates: string[]; monthName: string }[], curr) => {
-        // if its an array we already have our first month
+        // if it's an array we already have our first month
         if (Array.isArray(acc) && acc.length !== 0) {
           if (curr.dates.length === acc[0].dates.length) {
             return [...acc, curr];

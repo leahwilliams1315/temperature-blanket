@@ -24,9 +24,6 @@ export const StyledHeader = styled.div`
   h4 {
     margin: 0 0 20px 0;
   }
-  div {
-  
-  }
 `;
 
 export const StyledHeaderInfo = styled.div`
@@ -106,7 +103,6 @@ export const StyledColorSwatch = styled.div<{
   );
   background-size: 8px;
 `;
-
 
 export const TempRowContainer = styled.div`
   display: flex;

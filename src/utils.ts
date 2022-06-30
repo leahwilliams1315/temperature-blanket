@@ -9,13 +9,13 @@ export const convertToFahrenheit = (celsius: number) => {
   return Math.round(((celsius * 9) / 5 + 32) * 100) / 100;
 };
 
-
 export type WeatherDataAsMonthIndex = {
   [monthString: string]: {
     [dayNumber: string]: WeatherDataType;
   };
 };
-
+// function that takes an array of weather data objects and returns
+// an array of objects with the weather data grouped by month
 export const structureWeatherDataByMonth = (
   weatherDataByDates: WeatherDataType[]
 ): WeatherDataAsMonthIndex => {
@@ -50,10 +50,7 @@ export const getWeatherData = () => {
     )
     .then((res) => res.data.data)
     .then((weatherDataByDates: WeatherDataType[]) => {
-      // dispatch(setWeatherData(weatherDataByDates));
-
       localStorage.setItem("weatherData", JSON.stringify(weatherDataByDates));
-
       return weatherDataByDates;
     })
     .catch(() => {
