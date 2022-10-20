@@ -28,6 +28,12 @@ import {
   structureWeatherDataByMonth,
 } from "../utils";
 import { TemperatureDateTile } from "./TemperatureDateTile";
+import {
+RadialBar,
+RadialBarChart,
+Tooltip,
+Legend,
+} from 'recharts';
 
 const TemperatureBlanket = () => {
   const [expandedMonths, setExpandedMonths] = useState<{
@@ -98,6 +104,39 @@ const TemperatureBlanket = () => {
   console.log(monthsWithMostDatesInRange);
   console.log(monthsWithMostDatesInTemperatureRange);
 
+  // concat minTemp and maxTemp into the name, and use the color for the swatch
+  const temperatureRangeInRadialBarData = temperatureColourList.map(
+    ({ minTemp, maxTemp, color }) => ({
+        name: `${minTemp}${celsiusString} - ${maxTemp}${celsiusString}`,
+        color,
+        minTemp,
+        maxTemp,
+    }));
+
+  // for each temperature range, get the number of dates in that range
+    const temperatureRangeWithNumberOfDates = temperatureRangeInRadialBarData.map(
+        ({ minTemp, maxTemp, color, name }) => {
+            const numberOfDates = Object.values(indexedWeatherData).reduce(
+                (acc, curr) => {
+                    return (
+                        acc +
+                        Object.values(curr).filter(
+                            ({ temp }) =>
+                                temp >= minTemp && temp <= maxTemp
+                        ).length
+                    );
+                },
+                0
+            );
+            return {
+                name,
+                fill: color,
+                minTemp,
+                maxTemp,
+                numberOfDates,
+            };
+        });
+
   useEffect(() => {
     setExpandedMonths(
       monthsWithMostDatesInTemperatureRange.reduce((acc, curr) => {
@@ -118,7 +157,7 @@ const TemperatureBlanket = () => {
     getWeatherData().then((data) => {
       dispatch(setWeatherData(data));
     });
-  }, []);
+  }, [dispatch]);
 
   return (
     <StyledContainer>
@@ -130,6 +169,19 @@ const TemperatureBlanket = () => {
           average temperature of each day and shows what the temperature blanket
           looks like so far.
         </StyledHeaderInfo>
+        <RadialBarChart
+          width={730}
+          height={250}
+          innerRadius="10%"
+          outerRadius="80%"
+          data={temperatureRangeWithNumberOfDates}
+          startAngle={180}
+          endAngle={0}
+        >
+          <RadialBar label={{ fill: '#666', position: 'insideStart' }} background dataKey='numberOfDates' />
+          <Legend iconSize={10} width={120} height={140} layout='vertical' verticalAlign='middle' align="right" />
+          <Tooltip />
+        </RadialBarChart>
         <StyledColorLegend>
           {temperatureColourList.map((colorRange) => (
             <StyledColorWrapper

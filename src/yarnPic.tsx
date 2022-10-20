@@ -1,3 +1,5 @@
+import React from 'react';
+
 export const YarnPic = (props: any) => (
   <svg
     version="1.0"
